@@ -21,7 +21,11 @@ async function setLinks() {
         ["Canadiens", 8]
     ];
 
-
+    let spn = document.createElement("span");
+    spn.className = "teamGames";
+    spn.innerHTML =  "All game times " + Intl.DateTimeFormat().resolvedOptions().timeZone + "<br>";
+    div.appendChild(spn);
+    
     for (let index = 0; index < teamsCdn.length; index++) {
         let team = teamsCdn[index];
         let teamName = team[0];
@@ -51,7 +55,9 @@ async function setLinks() {
                     let separator = isHome ? " vs " : " @ ";
                     let otherTeamName = isHome ? awayTeam.name : homeTeam.name;
                     let gameTime = new Date(game.gameDate);
-                    games.push(gameTime.toLocaleDateString([], { weekday: 'long', hourCycle: "h12", hour: 'numeric', minute: '2-digit' }) + separator + otherTeamName);
+                    let isToday = gameTime.getDate() == new Date().getDate();
+                    console.log(gameTime.getDate(), new Date().getDate());
+                    games.push((isToday ? "Today" : gameTime.toLocaleDateString([], { weekday: 'long', hourCycle: "h12", hour: 'numeric', minute: '2-digit' })) + separator + otherTeamName);
                 }
                 html += "     " + games.join("   ---  ");
                 html += '<br>';
