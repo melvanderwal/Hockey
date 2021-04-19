@@ -1,0 +1,59 @@
+const sportsStatsTeamUrl = "http://sportsstats.xyz/www.sportsstats.me/nhl1/";
+const scheduleUrl = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=";
+const timer = ms => new Promise(res => setTimeout(res, ms));
+
+async function setLinks() {
+    let div = document.querySelector("#canadianTeams");
+    let teamsCdn = [
+        ["Canucks", 23],
+        ["Flames", 20],
+        ["Oilers", 22],
+        ["Jets", 52],
+        ["Leafs", 10],
+        ["Senators", 9],
+        ["Canadiens", 8]
+    ];
+
+
+    for (let index = 0; index < teamsCdn.length; index++) {
+        let team = teamsCdn[index];
+        let teamName = team[0];
+        let teamId = team[1];
+        let spn = document.createElement("span");
+        spn.className = "teamGames";
+        let html = '<a class="teamLink" href="' + sportsStatsTeamUrl + teamName + '.php" target="_blank">' + teamName + '</a>';
+
+        let offsetLocal = new Date().getTimezoneOffset() / 60;
+        let offsetEST = offsetLocal - 4;
+        let dateEST = new Date(new Date().getTime() + offsetEST * 3600 * 1000);
+        let startDate = dateEST.toISOString().substring(0, 10);
+        let endDate = new Date(dateEST);
+        endDate.setDate(endDate.getDate() + 7);
+        endDate = endDate.toISOString().substring(0, 10);
+
+        let url = scheduleUrl + teamId + "&startDate=" + startDate + "&endDate=" + endDate;
+        let games = [];
+        fetch(url, { method: 'GET' })
+            .then(response => response.json())
+            .then(scheduleJson => {
+                for (let index = 0; index < scheduleJson.dates.length; index++) {
+                    let game = scheduleJson.dates[index].games[0];
+                    let homeTeam = game.teams.home.team;
+                    let awayTeam = game.teams.away.team;
+                    let isHome = homeTeam.id == teamId
+                    let separator = isHome ? " vs " : " @ ";
+                    let otherTeamName = isHome ? awayTeam.name : homeTeam.name;
+                    let gameTime = new Date(game.gameDate);
+                    games.push(gameTime.toLocaleDateString([], { weekday: 'long', hourCycle: "h12", hour: 'numeric', minute: '2-digit' }) + separator + otherTeamName);
+                }
+                html += "     " + games.join("   ---  ");
+                html += '<br>';
+                spn.innerHTML = html;
+                div.appendChild(spn);
+            })
+        await timer(100);
+    };
+}
+
+
+setLinks();
