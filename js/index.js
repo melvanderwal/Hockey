@@ -1,3 +1,10 @@
+// If the padtop url parameter was provided, apply a margin to the top of the page so when 
+// embedded in the MelStuff page it starts below the header
+var urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has("padtop"))
+    document.body.style.paddingTop = urlParams.get("padtop") + "px";
+
+// Populate page with links to hockey streams
 const sportsStatsTeamUrl = "http://sportsstats.xyz/www.sportsstats.me/nhl1/";
 const scheduleUrl = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=";
 const timer = ms => new Promise(res => setTimeout(res, ms));
