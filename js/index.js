@@ -55,9 +55,8 @@ async function setLinks() {
                     let separator = isHome ? " vs " : " @ ";
                     let otherTeamName = isHome ? awayTeam.name : homeTeam.name;
                     let gameTime = new Date(game.gameDate);
-                    let isToday = gameTime.getDate() == new Date().getDate();
-                    console.log(gameTime.getDate(), new Date().getDate());
-                    games.push((isToday ? "Today" : gameTime.toLocaleDateString([], { weekday: 'long', hourCycle: "h12", hour: 'numeric', minute: '2-digit' })) + separator + otherTeamName);
+                    let day = gameTime.getDate() == new Date().getDate() ? "Today" : gameTime.toLocaleDateString([], { weekday: 'long' });
+                    games.push(day + " " + gameTime.toLocaleTimeString([], { hourCycle: "h12", hour: 'numeric', minute: '2-digit' }) + separator + otherTeamName);
                 }
                 html += "     " + games.join("   ---  ");
                 html += '<br>';
