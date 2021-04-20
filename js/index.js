@@ -34,6 +34,7 @@ async function setLinks() {
         spn.className = "teamGames";
         let html = '<a class="teamLink" href="' + sportsStatsTeamUrl + teamName + '.php" target="_blank">' + teamName + '</a>';
 
+        // Query dates in EST
         let offsetLocal = new Date().getTimezoneOffset() / 60;
         let offsetEST = offsetLocal - 4;
         let dateEST = new Date(new Date().getTime() + offsetEST * 3600 * 1000);
@@ -48,7 +49,9 @@ async function setLinks() {
             .then(response => response.json())
             .then(scheduleJson => {
                 for (let index = 0; index < scheduleJson.dates.length; index++) {
-                    let game = scheduleJson.dates[index].games[0];
+                    let game = scheduleJson.dates[index].games[0];                    
+                    
+                    // Display home and away teams, and game results if the game is underway or complete
                     let homeTeam = game.teams.home.team;
                     let awayTeam = game.teams.away.team;
                     let isHome = homeTeam.id == teamId
@@ -57,10 +60,19 @@ async function setLinks() {
                     let gameState = game.status.detailedState == "Final" ? ((isHome && homeScore > awayScore) || (!isHome && homeScore < awayScore) ? "Win" : "Loss") : game.status.detailedState;
                     let score = " (" + (isHome ? homeScore + "-" + awayScore : awayScore + "-" + homeScore) +  " " + gameState + ")";
                     if (game.status.abstractGameState == 'Preview') score = "";
+
+                    // Use different separator depending on whether team is home or away
                     let separator = isHome ? " vs " : " @ ";
                     let otherTeamName = isHome ? awayTeam.name : homeTeam.name;
+
+                    // Display game time in local time zone
                     let gameTime = new Date(game.gameDate);
-                    let day = gameTime.getDate() == new Date().getDate() ? "Today" : gameTime.toLocaleDateString([], { weekday: 'long' });
+                    let today = new Date();
+                    let tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+                    let day = gameTime.toLocaleDateString([], { weekday: 'long' });
+                    if (gameTime.getDate() == today.getDate()) day = "Today";
+                    if (gameTime.getDate() == tomorrow.getDate()) day = "Tomorrow";
+
                     games.push(day + " " + gameTime.toLocaleTimeString([], { hourCycle: "h12", hour: 'numeric', minute: '2-digit' }) + separator + otherTeamName + score);
                 }
                 html += "     " + games.join("   ---  ");
