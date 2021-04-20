@@ -23,9 +23,9 @@ async function setLinks() {
 
     let spn = document.createElement("span");
     spn.className = "teamGames";
-    spn.innerHTML =  "All game times " + Intl.DateTimeFormat().resolvedOptions().timeZone + "<br>";
+    spn.innerHTML = "All game times " + Intl.DateTimeFormat().resolvedOptions().timeZone + "<br>";
     div.appendChild(spn);
-    
+
     for (let index = 0; index < teamsCdn.length; index++) {
         let team = teamsCdn[index];
         let teamName = team[0];
@@ -52,11 +52,16 @@ async function setLinks() {
                     let homeTeam = game.teams.home.team;
                     let awayTeam = game.teams.away.team;
                     let isHome = homeTeam.id == teamId
+                    let homeScore = game.teams.home.score;
+                    let awayScore = game.teams.away.score;
+                    let gameState = game.status.detailedState == "Final" ? ((isHome && homeScore > awayScore) || (!isHome && homeScore < awayScore) ? "Win" : "Loss") : game.status.detailedState;
+                    let score = " (" + (isHome ? homeScore + "-" + awayScore : awayScore + "-" + homeScore) +  " " + gameState + ")";
+                    if (game.status.abstractGameState == 'Preview') score = "";
                     let separator = isHome ? " vs " : " @ ";
                     let otherTeamName = isHome ? awayTeam.name : homeTeam.name;
                     let gameTime = new Date(game.gameDate);
                     let day = gameTime.getDate() == new Date().getDate() ? "Today" : gameTime.toLocaleDateString([], { weekday: 'long' });
-                    games.push(day + " " + gameTime.toLocaleTimeString([], { hourCycle: "h12", hour: 'numeric', minute: '2-digit' }) + separator + otherTeamName);
+                    games.push(day + " " + gameTime.toLocaleTimeString([], { hourCycle: "h12", hour: 'numeric', minute: '2-digit' }) + separator + otherTeamName + score);
                 }
                 html += "     " + games.join("   ---  ");
                 html += '<br>';
