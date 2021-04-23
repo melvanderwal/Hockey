@@ -7,10 +7,11 @@ if (urlParams.has("padtop"))
 // Populate page with links to hockey streams
 const sportsStatsTeamUrl = "http://sportsstats.xyz/www.sportsstats.me/nhl1/";
 const scheduleUrl = "https://statsapi.web.nhl.com/api/v1/schedule?teamId=";
+const standingsUrl = "https://statsapi.web.nhl.com/api/v1/standings/byDivision";
 const timer = ms => new Promise(res => setTimeout(res, ms));
 
 async function setLinks() {
-    let div = document.querySelector("#canadianTeams");
+    let gamesDiv = document.querySelector("#canadianTeams");
     let teamsCdn = [
         ["Canucks", 23],
         ["Flames", 20],
@@ -24,7 +25,7 @@ async function setLinks() {
     let spn = document.createElement("span");
     spn.className = "teamGames";
     spn.innerHTML = "All game times " + Intl.DateTimeFormat().resolvedOptions().timeZone + "<br>";
-    div.appendChild(spn);
+    gamesDiv.appendChild(spn);
 
     for (let index = 0; index < teamsCdn.length; index++) {
         let team = teamsCdn[index];
@@ -78,10 +79,28 @@ async function setLinks() {
                 html += "     " + games.join("   ---  ");
                 html += '<br>';
                 spn.innerHTML = html;
-                div.appendChild(spn);
+                gamesDiv.appendChild(spn);
             })
         await timer(100);
     };
+
+    let standingsTable = document.querySelector("#standings");
+    fetch(standingsUrl, { method: 'GET' })
+        .then(response => response.json())
+        .then(standingsJson => {
+            standingsJson.records.forEach(record => {
+                if (record.division.name == "Scotia North") {
+                    record.teamRecords.forEach(teamRecord => {
+                        let tr = document.createElement("tr");
+                        tr.className = "teamStandings";
+                        tr.innerHTML =  '<td width="150px">' + teamRecord.team.name + "</td>";
+                        tr.innerHTML += '<td width="100px">' + teamRecord.points + " points</td>";
+                        tr.innerHTML += '<td width="150px">' + teamRecord.gamesPlayed + " games played</td>";
+                        standingsTable.appendChild(tr);
+                    });                    
+                }
+            });
+        })
 }
 
 

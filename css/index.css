@@ -16,6 +16,26 @@ body {
   padding: 10pt;
 }
 
+.teamStandings {
+  width: 800px;
+  display: block;
+  color: rgb(255, 255, 255);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-size: small;
+}
+
+.standingsName {
+  float: left;
+}
+
+.standingsPoints {
+  float:none;
+}
+
+.standingsGamesPlayed {
+  float: right;
+}
+
 .teamLink {
   color: cornflowerblue;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
